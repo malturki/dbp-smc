@@ -8,6 +8,8 @@ uncertainties, and **real-time**, capturing time clocks and message transmission
 
 *This is joint work with Max Kanovich, Tajana Ban Kirigin, Vivek Nigam, Andre Scedrov and Carolyn Talcott.*
 
+*The technical paper describing the model, the analysis performed and analysis results appeared in [CPS-SPC'18](https://www.cps-spc.org/2018) and can be found [here](https://dl.acm.org/citation.cfm?doid=3264888.3264895).
+
 ## Running Simulations
 
 The Maude model can be used to obtain sample runs of the protocol. The model is specified in **apmaude.maude** and **dbp-timing_v2.maude**, which can be found in the **/maude-specs** directory. To run the simulations, [Maude 2.4](http://maude.cs.illinois.edu/ "Maude") or newer versions may be used. Once installed, follow the following steps:
