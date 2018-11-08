@@ -1,0 +1,2 @@
+adet( ) = { s.rval(13) } ;
+eval E[ # adet( ) ] ;

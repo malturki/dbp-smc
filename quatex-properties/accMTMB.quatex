@@ -1,0 +1,2 @@
+acceptMTMB( ) = { s.rval(9) } ;
+eval E[ # acceptMTMB( ) ] ;

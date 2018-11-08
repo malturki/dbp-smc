@@ -1,0 +1,2 @@
+acceptAT( ) = { s.rval(2) } ;
+eval E[ # acceptAT( ) ] ;

@@ -1,0 +1,180 @@
+mod PRED is
+  pr NAT .
+
+  op p : NzNat -> Nat .
+  eq p(s(N:Nat)) = N:Nat .
+endm
+
+mod BIT is
+  pr NAT .
+
+  ---- The k in k-valued bits
+  op base : -> NzNat .
+
+  ---- Bit: a standard k-valued bit, 
+  ---- NoBit: the absense of a bit (destroyed by noise) 
+  sort Bit NoBit MaybeBit .
+  subsort Bit NoBit < MaybeBit .
+
+  ---- bN is just noise
+  op bN : -> NoBit [ctor] .
+
+  ---- b(n) is the bit (n mod k) 
+  op  b : Nat -> Bit [ctor] .
+
+  var N : Nat .
+  ---- Normalize if base is defined
+  ceq b(N) = b(N rem base) if N >= base . 
+
+  --- Useful predicate
+  op notNoise : MaybeBit -> Bool .
+  eq notNoise(bN) = false .
+  eq notNoise(MB:MaybeBit) = true [owise] .
+
+  --- [TODO] What's negation in k-valued logic?
+  --- Do we really need it?
+  op neg : Bit -> Bit .
+
+endm
+
+mod BLIST is
+  pr BIT .
+
+  --- A list of actual bits
+  sort BList .
+  subsort Bit < BList .
+
+  op nilBL : -> BList [ctor] .
+  op __ : BList BList -> BList [ctor assoc id: nilBL] .
+ 
+  var N : Nat .
+  var B : Bit . 
+  var L : BList .
+
+  ---- Bit list operations
+  op head : BList -> [Bit] .
+  eq head(B L) = B .
+    
+  op tail : BList -> [BList] .
+  eq tail(B L) = L .
+
+  op bitAt : Nat BList -> [Bit] .
+  eq bitAt(0, B L) = B .
+  eq bitAt(s(N), B L) = bitAt(N, L) .
+    
+endm
+
+mod BLLIST is
+  pr BLIST .
+
+  ---- A list of BLists (a matrix)
+  sort BLList .
+  subsort BList < BLList .
+
+  op nilBLL : -> BLList [ctor] .
+  op _;_ : BLList BLList -> BLList [ctor assoc id: nilBLL prec 75] .
+
+  vars B1 B2 B : Bit .
+  vars L L'    : BList .
+  vars LL LL'  : BLList .
+
+  ---- Bit list list operations
+  op headList : BLList -> [BList] .
+  eq headList(L ; L' ; LL) = L .
+  eq headList(L) = L .
+    
+  op tail : BLList -> [BLList] .
+  eq tail(L ; LL) = LL .
+
+  ---- Extracts the heads of all given lists into a list, consed with their tails
+  op  headList : BLList BList BLList -> [BLList] .
+  eq  headList(B1 B2 L ; LL, L', LL') = headList(LL, L' B1, LL' ; B2 L) .
+  eq  headList(B       ; LL, L', LL') = headList(LL, L' B , LL'       ) .
+  eq  headList(nilBLL      , L', LL') = L' ; LL' .   
+
+    ---- Transposes a list of lists (as a matrix)
+    op transpose : BLList -> [BLList] .
+   ceq transpose(L ; LL) = L' ; transpose(LL') if L' ; LL' := headList((L ; LL), nilBL, nilBLL) .
+    eq transpose(nilBLL) = nilBLL . 
+
+endm
+
+mod RANDBLIST is
+    pr BLLIST .
+    pr SAMPLER .
+
+    var N M : Nat . 
+    var K   : NzNat .
+    var B   : Bit . 
+    var BL  : BList .
+
+    ---- Generate a random binary-bit list (K is assumed 2) of length N
+    ---- A special case of the next op
+    op genRandBinBList : Nat -> [BList] .
+    eq genRandBinBList(0) 
+      = nilBL .
+    eq genRandBinBList(s(N)) 
+      = b( if sampleBerWithP(0.5) then 0 else 1 fi ) genRandBinBList(N) .
+
+    ---- Generate a random K-ary-bit list of length M 
+    op genRandKaryBList : NzNat Nat -> [BList] .
+    eq genRandKaryBList(K, 0) 
+      = nilBL .
+    eq genRandKaryBList(K, s(M)) 
+      = b( sampleUniWithInt(K) ) genRandKaryBList(K, M) .
+
+    **** 
+    ---- genRandKaryListsByRounds(K, M, N): Generate N random K-ary-bit lists, each of lenth M
+    ---- Note: each list in the generated list of lists represents a round in the protocol 
+    op genRandKaryListsByRounds : NzNat Nat Nat -> [BLList] .
+    eq genRandKaryListsByRounds(K, M, 0) 
+      = nilBLL .
+    eq genRandKaryListsByRounds(K, M, s(N)) 
+      = genRandKaryBList(K, M) ; genRandKaryListsByRounds(K, M, N) .
+
+    ---- We may transpose to properly layout the list of lists 
+    ---- But this is not needed; we may work with it as is (it's easier in fact)
+
+
+
+    ---- Generate an ordered bit list of all K-ary bits
+    op bitList : Nat -> BList .
+    eq bitList(0) 
+      = nilBL .
+    eq bitList(s(N)) 
+      = b(N) bitList(N) . 
+
+    ---- Shift circularly a bit list to the left N times
+    op shiftLeft : BList Nat -> BList .
+    eq shiftLeft(BL, 0) = BL .
+    eq shiftLeft(B BL, s(N)) = shiftLeft(BL B, N) .
+
+    ---- Generate a random K-ary-bit list of length M *with no repetition* 
+    ---- (assumes M <= K)
+    op genRandKaryPerm : NzNat Nat       -> [BList] .
+    op genRKP*         : NzNat Nat BList -> [BList] .  ---- an aux. op.
+
+    eq genRandKaryPerm(K, M) 
+      = genRKP*(K, M, shiftLeft(bitList(K), sampleUniWithInt(K))) .
+
+    eq genRKP*(N, 0, BL) = nilBL .
+    eq genRKP*(s(0), M, B BL) 
+      = B .
+    eq genRKP*(s(K), s(M), B BL) 
+      = B genRKP*(K, M, shiftLeft(BL, sampleUniWithInt(K))) .
+
+    **** 
+    ---- genRandKaryListsByRounds(K, M, N): Generate N random K-ary-bit lists each of length M 
+    ----    such that each list (round) has no repetition
+    ---- Note: each list in the generated list of lists represents a round in the DB protocol
+    op genRandCKaryListsByRounds : NzNat Nat Nat -> [BLList] .
+    eq genRandCKaryListsByRounds(K, M, 0) 
+      = nilBLL .
+    eq genRandCKaryListsByRounds(K, M, s(N))
+      = genRandKaryPerm(K, M) ; genRandCKaryListsByRounds(K, M, N) .
+
+    ---- Again: We may transpose to properly layout the list of lists 
+    ---- But this is not needed; we may work with it as is (it's easier in fact)
+
+
+endm

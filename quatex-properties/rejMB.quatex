@@ -1,0 +1,2 @@
+rejectMB( ) = { s.rval(5) } ;
+eval E[ # rejectMB( ) ] ;

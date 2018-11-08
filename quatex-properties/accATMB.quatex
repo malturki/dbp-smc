@@ -1,0 +1,2 @@
+acceptATMB( ) = { s.rval(11) } ;
+eval E[ # acceptATMB( ) ] ;

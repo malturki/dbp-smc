@@ -1,0 +1,8 @@
+set clear rules off .
+set print attribute on .
+
+load apmaude.maude
+load dbp-timing_v2.maude
+
+rew initState .
+rew tick(initState) .

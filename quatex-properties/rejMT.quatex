@@ -1,0 +1,2 @@
+rejectMT( ) = { s.rval(1) } ;
+eval E[ # rejectMT( ) ] ;

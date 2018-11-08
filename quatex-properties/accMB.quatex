@@ -1,0 +1,2 @@
+acceptMB( ) = { s.rval(4) } ;
+eval E[ # acceptMB( ) ] ;
