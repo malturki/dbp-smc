@@ -8,7 +8,9 @@ uncertainties, and **real-time**, capturing time clocks and message transmission
 
 *This is joint work with Max Kanovich, Tajana Ban Kirigin, Vivek Nigam, Andre Scedrov and Carolyn Talcott.*
 
-*The technical paper describing the model, the analysis performed and analysis results appeared in [CPS-SPC'18](https://www.cps-spc.org/2018) and can be found [here](https://dl.acm.org/citation.cfm?doid=3264888.3264895).*
+*The technical paper describing the model, the analysis performed and analysis results appeared in [CPS-SPC'18](https://www.cps-spc.org/2018) and can be found here:*
+
+<img src="resources/pdf-icon.png" alt="PDF" width="2%" /> *[Statistical Model Checking of Distance Fraud Attacks on the Hancke-Kuhn Family of Protocols](https://dl.acm.org/citation.cfm?doid=3264888.3264895)*
 
 ## Running Simulations
 
